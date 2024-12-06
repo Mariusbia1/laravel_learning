@@ -1,10 +1,17 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-    content: ["./src/**/*.{html,js}",
-                  "./views/**/*.{html,js,blade,php}"
+export default {
+    content: [
+      "./resources/**/*.blade.php",
+      "./resources/**/*.js",
+      "./resources/**/*.vue",
+
     ],
     theme: {
-      extend: {},
+      extend: {
+        colors:{
+            "laracast": "rgb(50,130,241)"
+        }
+      },
     },
     plugins: [],
   }

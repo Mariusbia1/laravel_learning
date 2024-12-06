@@ -1,53 +1,32 @@
 <?php
 
-use Illuminate\Support\Arr;
+use App\Http\Controllers\JobController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\SessionController;
+use App\Jobs\TranslateJob;
+use App\Mail\JobPosted;
 use App\Models\Job;
 
+ Route::get('test', function(){
+    $job = Job::first();
+    TranslateJob::dispatch($job);
+     return 'Done';
+ });
 
+Route::view('/', 'home' );
 
-Route::get('/', function () {
-   return view('home');
-});
+ Route::resource('jobs', JobController::class);
+ //->middleware('auth');
 
+Route::view('/contact', 'contact');
 
-Route::get('/jobs', function () {
-    $jobs=Job::with('employer')->latest()->simplePaginate(3);
-    return view('jobs.index',[
-        'jobs' => $jobs
-    ]);
-});
+//Auth
 
+Route::get('/register',[RegisterController::class,'create']);
+Route::post('/register',[RegisterController::class,'store']);
 
-Route::get('/jobs/create', function () {
-
-    return view('jobs.create');
-});
-
-Route::get('/jobs/{id}', function ($id) {
-
-   $job = Job::find($id);
-
-    return view('jobs.show',['job' => $job]);
-});
-
-Route::post('/jobs', function(){
-    //validation
-
-    request()->validate([
-        'title'=> ['required','min:3'],
-        'salary'=> ['required',]
-        ]);
-
-    Job::create([
-        'title'=> request('title'),
-        'salary'=> request('salary'),
-        'employer_id'=> 1
-    ]);
-
-    return redirect('/jobs');
-});
-
-Route::get('/contact', function () {
-    return view('contact');
-});
+Route::get('/login',[SessionController::class,'create'])->name('login');
+Route::post('/login',[SessionController::class,'store']);
+Route::post('/logout',[SessionController::class,'destroy']);
